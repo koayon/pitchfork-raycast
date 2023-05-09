@@ -14,7 +14,7 @@ export default function Command() {
       {data?.map((item, index) => (
         <List.Item key={index}
         title={`${item.artist} --- ${item.title}`}
-        icon={{ source: Icon.Music, tintColor: genre_to_colour(item.genre) }}
+        icon={{ source: bnm_to_icon(item.bnm), tintColor: genre_to_colour(item.genre, item.bnm) }}
         subtitle={{ tooltip: "", value: item.genre }}
         accessories={[ { text: timeAgo(item.date) } ]}
         actions={<ActionPanel title={item.title} >
@@ -63,12 +63,20 @@ async function fetchReviews() {
     .map((_, element) => $(element).attr("href"))
     .get();
 
+  const best_new_music: (boolean)[] = $(".review__meta")
+    .map((_, element) => {
+      const bnmElement = $(element).find(".review__meta-bnm");
+      return bnmElement.length > 0 ? true : false;
+    })
+    .get();
+
   const albums = titles.map((title, index) => ({
     title,
     artist: artists[index],
     date: dates[index],
     genre: genres[index],
     url: urls[index],
+    bnm: best_new_music[index],
   }));
 
   return albums;
@@ -91,7 +99,7 @@ enum GenreColor {
   Unknown = Color.Purple,
 }
 
-function genre_to_colour(genre: string): Color.ColorLike {
+function genre_to_colour(genre: string, bnm: boolean): Color.ColorLike {
   const genreMapping: Record<string, keyof typeof GenreColor> = {
     'Rock': 'Rock',
     'Jazz': 'Jazz',
@@ -105,5 +113,9 @@ function genre_to_colour(genre: string): Color.ColorLike {
   };
 
   const genreKey = genreMapping[genre] || 'Unknown';
-  return GenreColor[genreKey];
+  return bnm ? Color.Red : GenreColor[genreKey]
+}
+
+function bnm_to_icon(bnm: boolean): Icon {
+  return bnm ? Icon.Star : Icon.Music;
 }
