@@ -6,10 +6,15 @@
   "icon": "pitchfork_icon.png",
   "author": "koayon",
   "license": "MIT",
+  "categories": [
+    "News",
+    "Media",
+    "Web"
+  ],
   "commands": [
     {
       "name": "reviews",
-      "title": "Show Recent Pitchfork Album Reviews",
+      "title": "See Reviews",
       "description": "Show Recent Pitchfork Album Reviews",
       "mode": "view"
     }
