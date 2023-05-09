@@ -2,8 +2,7 @@ import { ActionPanel, Color, Icon, List, Action } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import axios from "axios";
 import cheerio from "cheerio";
-import { formatDistanceToNow } from 'date-fns';
-
+import { formatDistanceToNow } from "date-fns";
 
 export default function Command() {
   const { data, isLoading } = usePromise(fetchReviews, []);
@@ -12,23 +11,22 @@ export default function Command() {
   return (
     <List>
       {data?.map((item, index) => (
-        <List.Item key={index}
-        title={`${item.artist} --- ${item.title}`}
-        icon={{ source: bnm_to_icon(item.bnm), tintColor: genre_to_colour(item.genre, item.bnm) }}
-        subtitle={{ tooltip: "", value: item.genre }}
-        accessories={[ { text: timeAgo(item.date) } ]}
-        actions={<ActionPanel title={item.title} >
+        <List.Item
+          key={index}
+          title={`${item.artist} --- ${item.title}`}
+          icon={{ source: bnm_to_icon(item.bnm), tintColor: genre_to_colour(item.genre, item.bnm) }}
+          subtitle={{ tooltip: "", value: item.genre }}
+          accessories={[{ text: timeAgo(item.date) }]}
+          actions={
+            <ActionPanel title={item.title}>
               <ActionPanel.Section>
-                {item.url && <Action.OpenInBrowser url={base_url + item.url} title="Open Review in Browser"/> }
-                {item.url && (
-                <Action.CopyToClipboard
-                  content={base_url + item.url}
-                  title="Copy Link" /> )}
+                {item.url && <Action.OpenInBrowser url={base_url + item.url} title="Open Review" />}
+                {item.url && <Action.CopyToClipboard content={base_url + item.url} title="Copy Link" />}
               </ActionPanel.Section>
-            </ActionPanel> }
+            </ActionPanel>
+          }
         />
-      ))
-    }
+      ))}
     </List>
   );
 }
@@ -45,10 +43,11 @@ async function fetchReviews() {
   const artists = $(".review__title .review__title-artist")
     // .map((_, element) => $(element).text())
     .map((_, element) => {
-      const artistsInElement = $(element).find("li")
+      const artistsInElement = $(element)
+        .find("li")
         .map((_, artistElement) => $(artistElement).text())
         .get();
-      return artistsInElement.join(', ');
+      return artistsInElement.join(", ");
     })
     .get();
 
@@ -58,10 +57,11 @@ async function fetchReviews() {
 
   const genres = $(".review__meta .genre-list")
     .map((_, element) => {
-      const genresInElement = $(element).find(".genre-list__link")
+      const genresInElement = $(element)
+        .find(".genre-list__link")
         .map((_, genreElement) => $(genreElement).text())
         .get();
-      return genresInElement.join(', ');
+      return genresInElement.join(", ");
     })
     .get();
 
@@ -69,7 +69,7 @@ async function fetchReviews() {
     .map((_, element) => $(element).attr("href"))
     .get();
 
-  const best_new_music: (boolean)[] = $(".review__meta")
+  const best_new_music: boolean[] = $(".review__meta")
     .map((_, element) => {
       const bnmElement = $(element).find(".review__meta-bnm");
       return bnmElement.length > 0 ? true : false;
@@ -107,22 +107,20 @@ enum GenreColor {
 
 function genre_to_colour(genre: string, bnm: boolean): string {
   const genreMapping: Record<string, keyof typeof GenreColor> = {
-    'Rock': 'Rock',
-    'Jazz': 'Jazz',
-    'Electronic': 'Electronic',
-    'Experimental': 'Experimental',
-    'Rap': 'Rap',
-    'Folk/Country': 'FolkCountry',
-    'Pop/R&B': 'PopRnB',
-    'Metal': 'Metal',
-    'Global': 'Global',
+    Rock: "Rock",
+    Jazz: "Jazz",
+    Electronic: "Electronic",
+    Experimental: "Experimental",
+    Rap: "Rap",
+    "Folk/Country": "FolkCountry",
+    "Pop/R&B": "PopRnB",
+    Metal: "Metal",
+    Global: "Global",
   };
 
-  const genreKey = genreMapping[genre] || 'Unknown';
+  const genreKey = genreMapping[genre] || "Unknown";
   const genre_color = GenreColor[genreKey];
-  // console.log(typeof genre_color)
-  // console.log(typeof GenreColor)
-  const selected_color = bnm ? GenreColor.PopRnB : genre_color
+  const selected_color = bnm ? GenreColor.PopRnB : genre_color;
   return selected_color.toString();
 }
 
