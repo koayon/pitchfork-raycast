@@ -9,7 +9,7 @@ export default function Command() {
   const base_url = "https://pitchfork.com";
 
   return (
-    <List>
+    <List isLoading={data === undefined}>
       {data?.map((item, index) => (
         <List.Item
           key={index}
