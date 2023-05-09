@@ -43,7 +43,13 @@ async function fetchReviews() {
     .get();
 
   const artists = $(".review__title .review__title-artist")
-    .map((_, element) => $(element).text())
+    // .map((_, element) => $(element).text())
+    .map((_, element) => {
+      const artistsInElement = $(element).find("li")
+        .map((_, artistElement) => $(artistElement).text())
+        .get();
+      return artistsInElement.join(', ');
+    })
     .get();
 
   const dates = $(".review__meta .pub-date")
@@ -99,7 +105,7 @@ enum GenreColor {
   Unknown = Color.Purple,
 }
 
-function genre_to_colour(genre: string, bnm: boolean): Color.ColorLike {
+function genre_to_colour(genre: string, bnm: boolean): string {
   const genreMapping: Record<string, keyof typeof GenreColor> = {
     'Rock': 'Rock',
     'Jazz': 'Jazz',
@@ -113,7 +119,11 @@ function genre_to_colour(genre: string, bnm: boolean): Color.ColorLike {
   };
 
   const genreKey = genreMapping[genre] || 'Unknown';
-  return bnm ? Color.Red : GenreColor[genreKey]
+  const genre_color = GenreColor[genreKey];
+  // console.log(typeof genre_color)
+  // console.log(typeof GenreColor)
+  const selected_color = bnm ? GenreColor.PopRnB : genre_color
+  return selected_color.toString();
 }
 
 function bnm_to_icon(bnm: boolean): Icon {
